@@ -1,22 +1,65 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-shadow */
+/* eslint-disable space-before-function-paren */
 /* eslint-disable brace-style */
 /* eslint-disable indent */
 'use strict';
 const Discord = require('discord.js');
-const client = new Discord.Client();
+const bot = new Discord.Client();
 const config = require('./config.json');
 const colors = require('./colors.json');
 require('dotenv').config();
 
-client.on('ready', () => {
-	console.log(`We are online and ready! Running on Client: ${client.user.tag}`);
-	client.user.setActivity('CheekBot', {
-		type: 'WATCHING',
-	});
+const fs = require('fs');
+bot.commands = new Discord.Collection();
+// bot.aliases = new Discord.Collection();
+
+const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
+for (const file of commandFiles) {
+	const command = require(`./commands/${file}`);
+
+	bot.commands.set(command.name, command);
+}
+
+bot.on('ready', async () => {
+	console.log(`${bot.user.username} is online!`);
+
+	const statuses = [
+		`${bot.guilds.cache.size} Server(s)`,
+		'!help',
+		`Over ${bot.users.cache.size} User(s)`,
+	];
+	setInterval(function () {
+			const status = statuses[Math.floor(Math.random() * statuses.length)];
+			bot.user.setActivity(status, {
+				type: 'WATCHING',
+			});
+		},
+		3000);
+});
+
+bot.on('message', message => {
+	const args = message.content.substring(config.prefix.length).split(' ');
+
+	switch (args[0]) {
+		case 'ping':
+			bot.commands.get('ping').execute(message, args);
+			break;
+	}
+});
+
+bot.on('guildMemberAdd', async member => {
+	const channel = member.guild.channels.chache.find(channel => channel.name === 'bot-testing');
+	if (!channel) return;
+
+	channel.send(`Welcome to our server, ${member}, Please read the rules in the channel called rules`);
+	member.send('Welcome to the server');
 });
 
 // Test Command
 
-// client.on('message', message => {
+// bot.on('message', message => {
 //     if (message.author.bot || message.channel.type === 'dm') return;
 
 //     const prefix = config.prefix;
@@ -30,7 +73,7 @@ client.on('ready', () => {
 // });
 
 // Main Section
-client.on('message', async (message) => {
+bot.on('message', async (message) => {
 	if (message.author.bot || message.channel.type === 'dm') return;
 
 	const prefix = config.prefix;
@@ -100,7 +143,7 @@ client.on('message', async (message) => {
 		});
 	}
 
-	//User Info
+	// User Info
 	if (cmd == `${prefix}userinfo`) {
 		const embed = new Discord.MessageEmbed();
 		embed.setTitle('Member Information');
@@ -111,7 +154,7 @@ client.on('message', async (message) => {
 		embed.addField('**Username**', `${message.author.username}#${message.author.discriminator}`, true);
 		embed.addField('**ID**', `${message.author.id}`, true);
 		embed.addField('**Status**', `${message.author.presence.status}`, true);
-		embed.setFooter('Current server Infomation for', client.user.displayAvatarURL);
+		embed.setFooter('Current server Infomation for', bot.user.displayAvatarURL);
 		message.channel.send({
 			embed: embed,
 		});
@@ -122,4 +165,4 @@ client.on('message', async (message) => {
 
 // Bot Token Console Log
 // console.log(process.env.CLIENT_TOKEN);
-client.login(process.env.CLIENT_TOKEN);
+bot.login(process.env.CLIENT_TOKEN);
