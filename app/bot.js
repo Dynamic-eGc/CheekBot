@@ -1,13 +1,15 @@
-"use strict";
-const Discord = require("discord.js");
+/* eslint-disable brace-style */
+/* eslint-disable indent */
+'use strict';
+const Discord = require('discord.js');
 const client = new Discord.Client();
-const config = require("./config.json");
-require("dotenv").config();
+const config = require('./config.json');
+require('dotenv').config();
 
-client.on("ready", () => {
+client.on('ready', () => {
 	console.log(`We are online and ready! Running on Client: ${client.user.tag}`);
-	client.user.setActivity("CheekBot", {
-		type: "WATCHING",
+	client.user.setActivity('CheekBot', {
+		type: 'WATCHING',
 	});
 });
 
@@ -27,17 +29,17 @@ client.on("ready", () => {
 // });
 
 // Main Section
-client.on("message", async (message) => {
-	if (message.author.bot || message.channel.type === "dm") return;
+client.on('message', async (message) => {
+	if (message.author.bot || message.channel.type === 'dm') return;
 
 	const prefix = config.prefix;
-	const messageArray = message.content.split(" ");
+	const messageArray = message.content.split(' ');
 	const cmd = messageArray[0];
 	const args = messageArray.slice(1);
 
 	// Test command
 	if (cmd === `${prefix}test`) {
-		return message.channel.send("Hello World");
+		return message.channel.send('Hello World');
 	}
 
 	// Clear/Prune Message Command
@@ -45,16 +47,16 @@ client.on("message", async (message) => {
 		if (message.deletable) {
 			message.delete();
 		}
-		if (!message.member.hasPermission("MANAGE_MESSAGES")) {
+		if (!message.member.hasPermission('MANAGE_MESSAGES')) {
 			return (
-				await message.reply("You do not have permission to use this command!")
+				await message.reply('You do not have permission to use this command!')
 			).attachments((m) => m.delete(5000));
 		}
 
 		if (isNaN(args[0]) || parseInt(args[0]) <= 0) {
 			return (
 				await message.reply(
-					`This is not an amount! **Example**: ${prefix}clear 50`
+					`This is not an amount! **Example**: ${prefix}clear 50`,
 				)
 			).attachments((m) => m.delete(5000));
 		}
@@ -71,7 +73,7 @@ client.on("message", async (message) => {
 		message.channel
 			.bulkDelete(deleteAmount, true)
 			.catch((err) =>
-				message.reply(`Oops, Something went wrong, Try again!... ${err}`)
+				message.reply(`Oops, Something went wrong, Try again!... ${err}`),
 			);
 	}
 
@@ -82,11 +84,11 @@ client.on("message", async (message) => {
 
 	if (cmd == `${prefix}help`) {
 		const embed = new Discord.MessageEmbed();
-		embed.setTitle("Test Title");
-		embed.setColor("#fff");
-		embed.addField("Player Name", message.author.username);
-		embed.setDescription("Test Description");
-		embed.setFooter("Thanks for testing this");
+		embed.setTitle('Test Title');
+		embed.setColor('#fff');
+		embed.addField('Player Name', message.author.username);
+		embed.setDescription('Test Description');
+		embed.setFooter('Thanks for testing this');
 		return message.channel.send(embed);
 	}
 });
