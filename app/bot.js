@@ -4,6 +4,7 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
 const config = require('./config.json');
+const colors = require('./colors.json');
 require('dotenv').config();
 
 client.on('ready', () => {
@@ -82,15 +83,41 @@ client.on('message', async (message) => {
 		message.channel.send(`Hello ${message.author.username}`);
 	}
 
-	if (cmd == `${prefix}help`) {
+	// Server Ifno
+	if (cmd == `${prefix}serverinfo`) {
 		const embed = new Discord.MessageEmbed();
-		embed.setTitle('Test Title');
-		embed.setColor('#fff');
-		embed.addField('Player Name', message.author.username);
-		embed.setDescription('Test Description');
-		embed.setFooter('Thanks for testing this');
-		return message.channel.send(embed);
+		embed.setTitle('Server Info');
+		embed.setThumbnail(message.guild.iconURL);
+		embed.setAuthor(`${message.guild.name} info`, message.guild.iconURL);
+		embed.setColor(colors.discord);
+		embed.setDescription(`${message.guild.id}, ***${message.guild.owner.displayName}***`);
+		embed.addField('**Guild Name**', `${message.guild.name}`, true);
+		embed.addField('**Guild Owner**', `${message.guild.owner}`, true);
+		embed.addField('**Member Count**', `${message.guild.memberCount}`, true);
+		embed.setFooter(`Current server Infomation for ${message.guild.name}`);
+		message.channel.send({
+			embed: embed,
+		});
 	}
+
+	//User Info
+	if (cmd == `${prefix}userinfo`) {
+		const embed = new Discord.MessageEmbed();
+		embed.setTitle('Member Information');
+		embed.setThumbnail(message.guild.iconURL);
+		embed.setAuthor(`${message.guild.name} info`, message.guild.iconURL);
+		embed.setColor(colors.discord);
+		embed.setDescription(`${message.guild.id}, ***${message.guild.owner.displayName}***`);
+		embed.addField('**Username**', `${message.author.username}#${message.author.discriminator}`, true);
+		embed.addField('**ID**', `${message.author.id}`, true);
+		embed.addField('**Status**', `${message.author.presence.status}`, true);
+		embed.setFooter('Current server Infomation for', client.user.displayAvatarURL);
+		message.channel.send({
+			embed: embed,
+		});
+	}
+
+
 });
 
 // Bot Token Console Log
